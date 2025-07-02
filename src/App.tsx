@@ -12,6 +12,7 @@ import AppointmentForm from './components/Appointments/AppointmentForm';
 import ClientList from './components/Clients/ClientList';
 import CustomerList from './components/Customers/CustomerList';
 import CustomerListReport from './components/Customers/CustomerListReport';
+import DebugPanel from './components/Debug/DebugPanel';
 
 const Dashboard: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   return (
@@ -62,7 +63,12 @@ const MainApp: React.FC = () => {
   }
 
   if (!isAuthenticated) {
-    return <Login />;
+    return (
+      <>
+        <Login />
+        <DebugPanel />
+      </>
+    );
   }
 
   const getPageTitle = () => {
@@ -159,6 +165,9 @@ const MainApp: React.FC = () => {
           onSuccess={handleAppointmentSuccess}
         />
       )}
+
+      {/* Debug Panel */}
+      <DebugPanel />
     </div>
   );
 };
