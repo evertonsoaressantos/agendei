@@ -12,6 +12,7 @@ import AppointmentForm from './components/Appointments/AppointmentForm';
 import ClientList from './components/Clients/ClientList';
 import CustomerList from './components/Customers/CustomerList';
 import CustomerListReport from './components/Customers/CustomerListReport';
+import CustomerListAdvanced from './components/Customers/CustomerListAdvanced';
 import DebugPanel from './components/Debug/DebugPanel';
 
 const Dashboard: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
@@ -79,6 +80,7 @@ const MainApp: React.FC = () => {
       case 'clients': return 'Clientes';
       case 'customers': return 'Gestão de Clientes';
       case 'customer-report': return 'Relatório de Clientes';
+      case 'customer-list-advanced': return 'Lista Completa de Clientes';
       case 'reports': return 'Relatórios';
       case 'settings': return 'Configurações';
       default: return 'Painel';
@@ -105,6 +107,8 @@ const MainApp: React.FC = () => {
         return <CustomerList />;
       case 'customer-report':
         return <CustomerListReport />;
+      case 'customer-list-advanced':
+        return <CustomerListAdvanced />;
       case 'reports':
         return (
           <div className="bg-white rounded-2xl p-8 border border-gray-200">
@@ -117,6 +121,15 @@ const MainApp: React.FC = () => {
                 <h3 className="font-semibold text-primary-800">Relatório Completo de Clientes</h3>
                 <p className="text-primary-600 text-sm mt-1">
                   Lista detalhada de todos os clientes cadastrados no sistema
+                </p>
+              </button>
+              <button
+                onClick={() => setActiveView('customer-list-advanced')}
+                className="w-full p-4 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl text-left transition-colors"
+              >
+                <h3 className="font-semibold text-blue-800">Lista Avançada de Clientes</h3>
+                <p className="text-blue-600 text-sm mt-1">
+                  Lista completa com filtros avançados e histórico de agendamentos
                 </p>
               </button>
               <p className="text-gray-600">Outras funcionalidades em desenvolvimento</p>
