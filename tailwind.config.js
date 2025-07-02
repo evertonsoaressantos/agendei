@@ -1,0 +1,66 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  theme: {
+    extend: {
+      colors: {
+        primary: {
+          50: '#f7ffe0',
+          100: '#ecffb3',
+          200: '#dcff80',
+          300: '#d6ff4e',
+          400: '#ccff1a',
+          500: '#d6ff4e',
+          600: '#b8e002',
+          700: '#8ba600',
+          800: '#5c6e00',
+          900: '#2e3700',
+        },
+        secondary: {
+          50: '#f5f0ff',
+          100: '#ede0ff',
+          200: '#dcc6ff',
+          300: '#cda6ff',
+          400: '#b885ff',
+          500: '#a364ff',
+          600: '#8e42ff',
+          700: '#7a21ff',
+          800: '#6600ff',
+          900: '#4a0099',
+        },
+        accent: {
+          50: '#f0fdf0',
+          100: '#e6fce6',
+          200: '#d1f7d1',
+          300: '#bfe6b5',
+          400: '#9fd89f',
+          500: '#7bc97b',
+          600: '#5bb85b',
+          700: '#4a9a4a',
+          800: '#3a7c3a',
+          900: '#2d5f2d',
+        },
+        dark: {
+          50: '#f6f6f6',
+          100: '#e7e7e7',
+          200: '#d1d1d1',
+          300: '#b0b0b0',
+          400: '#888888',
+          500: '#6d6d6d',
+          600: '#5d5d5d',
+          700: '#4f4f4f',
+          800: '#454545',
+          900: '#060b0a',
+        },
+      },
+      fontFamily: {
+        sans: ['-apple-system', 'BlinkMacSystemFont', 'SF Pro Display', 'Segoe UI', 'Roboto', 'sans-serif'],
+      },
+      boxShadow: {
+        'soft': '0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04)',
+        'card': '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
+      },
+    },
+  },
+  plugins: [],
+};
