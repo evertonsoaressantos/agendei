@@ -4,6 +4,14 @@ import ConnectionStatus from './ConnectionStatus';
 import { runConnectionTest } from '../../utils/supabaseTest';
 
 const DebugPanel: React.FC = () => {
+  // Debug panel removido da interface do usuário
+  // Mantendo apenas para desenvolvimento em modo específico
+  const isDevelopment = import.meta.env.DEV && import.meta.env.VITE_SHOW_DEBUG === 'true';
+  
+  if (!isDevelopment) {
+    return null; // Remove completamente da interface em produção
+  }
+
   const [isOpen, setIsOpen] = useState(false);
 
   const handleRunFullTest = async () => {
