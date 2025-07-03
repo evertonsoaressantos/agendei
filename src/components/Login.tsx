@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Lock, Mail, Calendar, AlertCircle } from 'lucide-react';
+import { Lock, Mail, Calendar, AlertCircle, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import SignUpForm from './SignUpForm';
+import ForgotPasswordForm from './ForgotPasswordForm';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -9,6 +10,8 @@ const Login: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showSignUp, setShowSignUp] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login } = useAuth();
 
   // Check if Supabase is configured
@@ -38,12 +41,29 @@ const Login: React.FC = () => {
     alert('Conta criada com sucesso! Você pode fazer login agora.');
   };
 
+  const handleForgotPasswordSuccess = () => {
+    setShowForgotPassword(false);
+    setError('');
+    alert('Email de recuperação enviado! Verifique sua caixa de entrada.');
+  };
+
   if (showSignUp) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50 flex items-center justify-center p-4">
         <SignUpForm 
           onSuccess={handleSignUpSuccess}
           onBack={() => setShowSignUp(false)}
+        />
+      </div>
+    );
+  }
+
+  if (showForgotPassword) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-white to-accent-50 flex items-center justify-center p-4">
+        <ForgotPasswordForm 
+          onSuccess={handleForgotPasswordSuccess}
+          onBack={() => setShowForgotPassword(false)}
         />
       </div>
     );
@@ -119,20 +139,43 @@ const Login: React.FC = () => {
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   id="password"
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
+                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200"
                   placeholder="••••••••"
                   minLength={6}
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 p-1 text-gray-500 hover:text-gray-700 transition-colors"
+                  aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                >
+                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                </button>
+              </div>
+              
+              {/* Forgot Password Link */}
+              <div className="mt-2 text-right">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  disabled={!isSupabaseConfigured}
+                  className="text-sm text-primary-600 hover:text-primary-700 transition-colors disabled:text-gray-400 disabled:cursor-not-allowed"
+                >
+                  Esqueceu sua senha?
+                </button>
               </div>
             </div>
 
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-xl p-3">
-                <p className="text-red-600 text-sm">{error}</p>
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-red-600" />
+                  <p className="text-red-600 text-sm">{error}</p>
+                </div>
               </div>
             )}
 

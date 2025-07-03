@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { AppProvider, useApp } from './context/AppContext';
 import Login from './components/Login';
+import ResetPasswordForm from './components/ResetPasswordForm';
 import Header from './components/Layout/Header';
 import Sidebar from './components/Layout/Sidebar';
 import MobileNavBar from './components/Layout/MobileNavBar';
@@ -32,6 +33,17 @@ const MainApp: React.FC = () => {
   const [showAppointmentForm, setShowAppointmentForm] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
 
+  // Check if we're on the reset password page
+  const [isResetPasswordPage, setIsResetPasswordPage] = useState(false);
+
+  useEffect(() => {
+    // Check URL for reset password route
+    const urlParams = new URLSearchParams(window.location.search);
+    const isReset = window.location.pathname === '/reset-password' || 
+                   urlParams.has('type') && urlParams.get('type') === 'recovery';
+    setIsResetPasswordPage(isReset);
+  }, []);
+
   const handleViewChange = (view: string) => {
     setActiveView(view);
     if (view === 'new-appointment') {
@@ -46,9 +58,13 @@ const MainApp: React.FC = () => {
     setShowAppointmentForm(false);
     setActiveView('dashboard');
     
-    // Refresh appointments to show the new one
     await refreshAppointments();
   };
+
+  // Show reset password form if on reset password page
+  if (isResetPasswordPage) {
+    return <ResetPasswordForm />;
+  }
 
   if (authLoading || (isAuthenticated && appLoading)) {
     return (
@@ -150,7 +166,6 @@ const MainApp: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Desktop Sidebar */}
       <Sidebar 
         activeView={activeView}
         onViewChange={handleViewChange}
@@ -166,7 +181,6 @@ const MainApp: React.FC = () => {
         </main>
       </div>
 
-      {/* Mobile Navigation Bar */}
       <MobileNavBar 
         activeView={activeView}
         onViewChange={handleViewChange}
@@ -179,7 +193,6 @@ const MainApp: React.FC = () => {
         />
       )}
 
-      {/* Debug Panel */}
       <DebugPanel />
     </div>
   );

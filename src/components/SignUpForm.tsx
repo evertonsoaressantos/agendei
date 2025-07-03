@@ -39,7 +39,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
 
   const totalSteps = 5;
 
-  // Requisitos de senha
+  // Password requirements
   const passwordRequirements: PasswordRequirement[] = [
     { label: 'Mínimo de 8 caracteres', test: (pwd) => pwd.length >= 8 },
     { label: 'Uma letra maiúscula', test: (pwd) => /[A-Z]/.test(pwd) },
@@ -48,7 +48,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
     { label: 'Um caractere especial', test: (pwd) => /[!@#$%^&*(),.?":{}|<>]/.test(pwd) }
   ];
 
-  // Validação do nome
+  // Validation functions
   const validateName = (name: string): string | null => {
     if (!name.trim()) {
       return 'Nome é obrigatório';
@@ -59,7 +59,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
     if (!/^[a-zA-ZÀ-ÿ\s]+$/.test(name)) {
       return 'Nome deve conter apenas letras e espaços';
     }
-    // Verificar se é nome completo (pelo menos 2 palavras)
     const nameParts = name.trim().split(/\s+/);
     if (nameParts.length < 2) {
       return 'Por favor, digite seu nome completo';
@@ -67,7 +66,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
     return null;
   };
 
-  // Validação do email
   const validateEmail = (email: string): string | null => {
     if (!email.trim()) {
       return 'Email é obrigatório';
@@ -79,23 +77,19 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
     return null;
   };
 
-  // Verificar se email já existe
   const checkEmailExists = async (email: string): Promise<boolean> => {
     try {
       setEmailChecking(true);
       
-      // Try to sign in with a dummy password to check if email exists
       const { error } = await supabase.auth.signInWithPassword({
         email,
         password: 'dummy-password-for-check'
       });
       
-      // If the error is about invalid credentials, the email exists
       if (error?.message?.includes('Invalid login credentials')) {
         return true;
       }
       
-      // If there's no error or a different error, email might not exist
       return false;
     } catch (error: any) {
       console.error('Error checking email:', error);
@@ -105,7 +99,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
     }
   };
 
-  // Calcular força da senha
   const getPasswordStrength = (password: string): { score: number; label: string; color: string } => {
     const metRequirements = passwordRequirements.filter(req => req.test(password)).length;
     
@@ -116,7 +109,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
     return { score: 100, label: 'Forte', color: 'bg-green-500' };
   };
 
-  // Validar passo atual
   const validateCurrentStep = (): boolean => {
     const newErrors: Record<string, string> = {};
 
@@ -149,11 +141,9 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Navegar para próximo passo
   const nextStep = async () => {
     if (!validateCurrentStep()) return;
 
-    // Verificar email no passo 2
     if (currentStep === 2) {
       const emailExists = await checkEmailExists(formData.email);
       if (emailExists) {
@@ -168,7 +158,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
     }
   };
 
-  // Voltar passo
   const prevStep = () => {
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
@@ -176,7 +165,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
     }
   };
 
-  // Ir para passo específico (apenas para trás)
   const goToStep = (step: number) => {
     if (step < currentStep) {
       setCurrentStep(step);
@@ -184,7 +172,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
     }
   };
 
-  // Submeter formulário
   const handleSubmit = async () => {
     if (!validateCurrentStep()) return;
 
@@ -211,7 +198,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
       }
 
       if (data.user) {
-        // Tentar criar perfil do usuário
         const { error: profileError } = await supabase
           .from('users')
           .insert([{
@@ -236,7 +222,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
     }
   };
 
-  // Renderizar indicador de progresso
   const renderProgressBar = () => (
     <div className="mb-8">
       <div className="flex items-center justify-between mb-2">
@@ -254,7 +239,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
         />
       </div>
       
-      {/* Indicadores de passos */}
       <div className="flex justify-between mt-4">
         {Array.from({ length: totalSteps }, (_, i) => i + 1).map((step) => (
           <button
@@ -276,7 +260,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
     </div>
   );
 
-  // Renderizar conteúdo do passo
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
@@ -311,7 +294,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
                 </div>
               )}
               
-              {/* Feedback em tempo real */}
               {formData.name && !errors.name && validateName(formData.name) === null && (
                 <div className="mt-2 flex items-center gap-2 text-green-600">
                   <Check className="w-4 h-4" />
@@ -362,7 +344,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
                 </div>
               )}
               
-              {/* Feedback em tempo real */}
               {formData.email && !errors.email && !emailChecking && validateEmail(formData.email) === null && (
                 <div className="mt-2 flex items-center gap-2 text-green-600">
                   <Check className="w-4 h-4" />
@@ -409,7 +390,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
                 </button>
               </div>
 
-              {/* Indicador de força da senha */}
               {formData.password && (
                 <div className="mt-3">
                   <div className="flex items-center justify-between mb-2">
@@ -431,7 +411,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
                 </div>
               )}
 
-              {/* Requisitos da senha */}
               <div className="mt-4 space-y-2">
                 <p className="text-sm font-medium text-gray-700">Requisitos:</p>
                 {passwordRequirements.map((requirement, index) => {
@@ -453,6 +432,21 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
                   <span className="text-sm">{errors.password}</span>
                 </div>
               )}
+            </div>
+
+            {/* Password tips */}
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+              <div className="flex items-start gap-3">
+                <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5" />
+                <div className="text-sm text-blue-800">
+                  <p className="font-medium mb-1">Dicas para uma senha forte:</p>
+                  <ul className="space-y-1">
+                    <li>• Use uma combinação de letras, números e símbolos</li>
+                    <li>• Evite informações pessoais óbvias</li>
+                    <li>• Considere usar uma frase como base</li>
+                  </ul>
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -494,7 +488,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
                 </button>
               </div>
 
-              {/* Feedback em tempo real */}
               {formData.confirmPassword && (
                 <div className={`mt-2 flex items-center gap-2 ${
                   passwordsMatch ? 'text-green-600' : 'text-red-600'
@@ -596,7 +589,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ onSuccess, onBack }) => {
         {renderProgressBar()}
         {renderStepContent()}
 
-        {/* Botões de navegação */}
         <div className="flex gap-3 mt-8">
           {currentStep > 1 && (
             <button
