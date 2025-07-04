@@ -47,17 +47,6 @@ const CustomerListReport: React.FC = () => {
       setLocalClients(clients);
       console.log('CustomerListReport: Clientes locais carregados:', clients.length);
 
-      // 3. Carregar dados do localStorage diretamente
-      try {
-        const savedClients = localStorage.getItem('clients');
-        if (savedClients) {
-          const parsed = JSON.parse(savedClients);
-          console.log('CustomerListReport: Dados diretos do localStorage:', parsed.length);
-        }
-      } catch (localError) {
-        console.warn('CustomerListReport: Erro ao carregar localStorage:', localError);
-      }
-
     } catch (error) {
       console.error('CustomerListReport: Erro geral:', error);
       setError('Erro ao carregar dados dos clientes');
@@ -390,28 +379,6 @@ const CustomerListReport: React.FC = () => {
               </table>
             </div>
           )}
-        </div>
-
-        {/* Debug Information */}
-        <div className="mt-6 bg-gray-100 rounded-2xl p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Informações de Debug</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div className="bg-white p-4 rounded-xl">
-              <h4 className="font-medium text-gray-900 mb-2">Banco de Dados (Supabase)</h4>
-              <p className="text-gray-600">Clientes: {customers.length}</p>
-              <p className="text-gray-600">Status: {customers.length > 0 ? '✅ Conectado' : '⚠️ Vazio ou desconectado'}</p>
-            </div>
-            <div className="bg-white p-4 rounded-xl">
-              <h4 className="font-medium text-gray-900 mb-2">Armazenamento Local</h4>
-              <p className="text-gray-600">Clientes: {localClients.length}</p>
-              <p className="text-gray-600">Status: {localClients.length > 0 ? '✅ Com dados' : '⚠️ Vazio'}</p>
-            </div>
-            <div className="bg-white p-4 rounded-xl">
-              <h4 className="font-medium text-gray-900 mb-2">Total Combinado</h4>
-              <p className="text-gray-600">Clientes: {allClients.length}</p>
-              <p className="text-gray-600">Únicos: {filteredClients.length} (após filtros)</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
