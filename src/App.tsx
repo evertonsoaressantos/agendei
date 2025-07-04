@@ -6,15 +6,19 @@ import ResetPasswordForm from './components/ResetPasswordForm';
 import Header from './components/Layout/Header';
 import Sidebar from './components/Layout/Sidebar';
 import MobileNavBar from './components/Layout/MobileNavBar';
+import OfflineIndicator from './components/Layout/OfflineIndicator';
 import DashboardStats from './components/Dashboard/DashboardStats';
 import TodaySchedule from './components/Dashboard/TodaySchedule';
-import WeeklyCalendar from './components/Calendar/WeeklyCalendar';
-import AppointmentForm from './components/Appointments/AppointmentForm';
 import ClientList from './components/Clients/ClientList';
-import CustomerList from './components/Customers/CustomerList';
 import CustomerListReport from './components/Customers/CustomerListReport';
-import CustomerListAdvanced from './components/Customers/CustomerListAdvanced';
 import DebugPanel from './components/Debug/DebugPanel';
+
+// Lazy loaded components
+import {
+  WeeklyCalendarWithSuspense,
+  AppointmentFormWithSuspense,
+  CustomerListWithSuspense
+} from './components/LazyComponents';
 
 const Dashboard: React.FC<{ onNavigate: (view: string) => void }> = ({ onNavigate }) => {
   return (
@@ -95,8 +99,7 @@ const MainApp: React.FC = () => {
       case 'new-appointment': return 'Novo Agendamento';
       case 'clients': return 'Clientes';
       case 'customers': return 'Gestão de Clientes';
-      case 'customer-report': return 'Relatório de Clientes';
-      case 'customer-list-advanced': return 'Lista Completa de Clientes';
+      case 'customer-report': return 'Relatórios';
       case 'reports': return 'Relatórios';
       case 'settings': return 'Configurações';
       default: return 'Painel';
@@ -109,7 +112,7 @@ const MainApp: React.FC = () => {
         return <Dashboard onNavigate={handleViewChange} />;
       case 'calendar':
         return (
-          <WeeklyCalendar 
+          <WeeklyCalendarWithSuspense 
             currentDate={currentDate}
             onDateChange={setCurrentDate}
             onNewAppointment={() => setShowAppointmentForm(true)}
@@ -120,38 +123,10 @@ const MainApp: React.FC = () => {
       case 'clients':
         return <ClientList />;
       case 'customers':
-        return <CustomerList />;
+        return <CustomerListWithSuspense />;
       case 'customer-report':
-        return <CustomerListReport />;
-      case 'customer-list-advanced':
-        return <CustomerListAdvanced />;
       case 'reports':
-        return (
-          <div className="bg-white rounded-2xl p-8 border border-gray-200">
-            <h2 className="text-xl font-semibold text-dark-900 mb-4">Relatórios</h2>
-            <div className="space-y-4">
-              <button
-                onClick={() => setActiveView('customer-report')}
-                className="w-full p-4 bg-primary-50 hover:bg-primary-100 border border-primary-200 rounded-xl text-left transition-colors"
-              >
-                <h3 className="font-semibold text-primary-800">Relatório Completo de Clientes</h3>
-                <p className="text-primary-600 text-sm mt-1">
-                  Lista detalhada de todos os clientes cadastrados no sistema
-                </p>
-              </button>
-              <button
-                onClick={() => setActiveView('customer-list-advanced')}
-                className="w-full p-4 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl text-left transition-colors"
-              >
-                <h3 className="font-semibold text-blue-800">Lista Avançada de Clientes</h3>
-                <p className="text-blue-600 text-sm mt-1">
-                  Lista completa com filtros avançados e histórico de agendamentos
-                </p>
-              </button>
-              <p className="text-gray-600">Outras funcionalidades em desenvolvimento</p>
-            </div>
-          </div>
-        );
+        return <CustomerListReport />;
       case 'settings':
         return (
           <div className="bg-white rounded-2xl p-8 border border-gray-200">
@@ -166,6 +141,8 @@ const MainApp: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
+      <OfflineIndicator />
+      
       <Sidebar 
         activeView={activeView}
         onViewChange={handleViewChange}
@@ -187,7 +164,7 @@ const MainApp: React.FC = () => {
       />
 
       {showAppointmentForm && (
-        <AppointmentForm
+        <AppointmentFormWithSuspense
           onClose={() => setShowAppointmentForm(false)}
           onSuccess={handleAppointmentSuccess}
         />
