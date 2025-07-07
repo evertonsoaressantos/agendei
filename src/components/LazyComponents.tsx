@@ -3,7 +3,6 @@ import { Loader } from 'lucide-react';
 
 // Lazy loading dos componentes pesados
 export const LazyCustomerList = React.lazy(() => import('./Customers/CustomerList'));
-export const LazyCustomerListAdvanced = React.lazy(() => import('./Customers/CustomerListAdvanced'));
 export const LazyWeeklyCalendar = React.lazy(() => import('./Calendar/WeeklyCalendar'));
 export const LazyAppointmentForm = React.lazy(() => import('./Appointments/AppointmentForm'));
 
@@ -31,6 +30,5 @@ export const withSuspense = <P extends object>(
 
 // Componentes exportados com Suspense
 export const CustomerListWithSuspense = withSuspense(LazyCustomerList, 'Carregando lista de clientes...');
-export const CustomerListAdvancedWithSuspense = withSuspense(LazyCustomerListAdvanced, 'Carregando lista avançada...');
 export const WeeklyCalendarWithSuspense = withSuspense(LazyWeeklyCalendar, 'Carregando calendário...');
 export const AppointmentFormWithSuspense = withSuspense(LazyAppointmentForm, 'Carregando formulário...');
