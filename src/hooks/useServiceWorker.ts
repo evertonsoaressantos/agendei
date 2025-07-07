@@ -21,6 +21,16 @@ export const useServiceWorker = () => {
       return;
     }
 
+    // Check if we're in a StackBlitz/WebContainer environment
+    const isStackBlitz = window.location.hostname.includes('stackblitz') || 
+                        window.location.hostname.includes('webcontainer') ||
+                        window.location.hostname === 'localhost';
+
+    if (isStackBlitz) {
+      console.log('Service Worker não é suportado no ambiente StackBlitz/WebContainer');
+      return;
+    }
+
     registerServiceWorker();
     setupOnlineOfflineListeners();
     setupServiceWorkerListeners();
@@ -47,6 +57,11 @@ export const useServiceWorker = () => {
       });
 
     } catch (error) {
+      // Handle StackBlitz/WebContainer specific error gracefully
+      if (error instanceof Error && error.message.includes('StackBlitz')) {
+        console.log('Service Worker não é suportado no ambiente StackBlitz/WebContainer');
+        return;
+      }
       console.error('Falha ao registrar Service Worker:', error);
     }
   };
@@ -60,6 +75,9 @@ export const useServiceWorker = () => {
       if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
         navigator.serviceWorker.ready.then(registration => {
           return registration.sync.register('background-sync');
+        }).catch(error => {
+          // Silently handle sync registration errors in unsupported environments
+          console.log('Background sync não é suportado neste ambiente');
         });
       }
     };
@@ -96,6 +114,8 @@ export const useServiceWorker = () => {
           registration.waiting.postMessage({ type: 'SKIP_WAITING' });
           window.location.reload();
         }
+      }).catch(error => {
+        console.log('Atualização do Service Worker não é suportada neste ambiente');
       });
     }
   };
