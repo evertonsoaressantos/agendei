@@ -1,7 +1,7 @@
 import { supabase } from '../lib/supabase';
 import { Appointment } from '../types';
 
-export interface DatabaseAppointment {
+interface DatabaseAppointment {
   id: string;
   user_id: string;
   customer_id: number;

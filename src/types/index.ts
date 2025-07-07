@@ -39,7 +39,7 @@ export interface Appointment {
   whatsappSent?: boolean;
 }
 
-export interface TimeSlot {
+interface TimeSlot {
   time: string;
   available: boolean;
   appointmentId?: string;

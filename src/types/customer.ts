@@ -38,7 +38,7 @@ export interface CustomerFilters {
   };
 }
 
-export interface CustomerAuditLog {
+interface CustomerAuditLog {
   audit_id: number;
   customer_id: number;
   action: 'INSERT' | 'UPDATE' | 'DELETE';

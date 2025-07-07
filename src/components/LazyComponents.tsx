@@ -2,9 +2,9 @@ import React, { Suspense } from 'react';
 import { Loader } from 'lucide-react';
 
 // Lazy loading dos componentes pesados
-export const LazyCustomerList = React.lazy(() => import('./Customers/CustomerList'));
-export const LazyWeeklyCalendar = React.lazy(() => import('./Calendar/WeeklyCalendar'));
-export const LazyAppointmentForm = React.lazy(() => import('./Appointments/AppointmentForm'));
+const LazyCustomerList = React.lazy(() => import('./Customers/CustomerList'));
+const LazyWeeklyCalendar = React.lazy(() => import('./Calendar/WeeklyCalendar'));
+const LazyAppointmentForm = React.lazy(() => import('./Appointments/AppointmentForm'));
 
 // Componente de loading
 const LoadingSpinner: React.FC<{ message?: string }> = ({ message = 'Carregando...' }) => (
@@ -17,7 +17,7 @@ const LoadingSpinner: React.FC<{ message?: string }> = ({ message = 'Carregando.
 );
 
 // HOC para wrapping com Suspense
-export const withSuspense = <P extends object>(
+const withSuspense = <P extends object>(
   Component: React.ComponentType<P>,
   loadingMessage?: string
 ) => {

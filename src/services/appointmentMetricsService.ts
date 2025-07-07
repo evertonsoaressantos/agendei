@@ -1,6 +1,6 @@
 import { supabase } from '../lib/supabase';
 
-export interface AppointmentMetric {
+interface AppointmentMetric {
   id: string;
   date: string;
   daily_total: number;
@@ -11,7 +11,7 @@ export interface AppointmentMetric {
   user_id: string;
 }
 
-export interface DailyMetricsCalculation {
+interface DailyMetricsCalculation {
   date: string;
   dailyTotal: number;
   movingAverage: number;
