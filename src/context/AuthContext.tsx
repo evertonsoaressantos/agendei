@@ -75,6 +75,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (error) {
           console.error('Session error:', error);
+          
+          // Check for invalid refresh token error
+          if (error.message && error.message.includes('Invalid Refresh Token')) {
+            console.log('Invalid refresh token detected, clearing session');
+            try {
+              await supabase.auth.signOut();
+            } catch (signOutError) {
+              console.error('Error signing out:', signOutError);
+            }
+            setUser(null);
+            setLoading(false);
+            return;
+          }
+          
           setSupabaseAvailable(false);
           setLoading(false);
           return;
@@ -86,7 +100,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setLoading(false);
         }
       } catch (error) {
-        console.error('Supabase connection failed, using demo mode:', error);
+        console.error('Supabase connection failed:', error);
+        
+        // Check for invalid refresh token error in catch block as well
+        if (error instanceof Error && error.message.includes('Invalid Refresh Token')) {
+          console.log('Invalid refresh token detected in catch, clearing session');
+          try {
+            await supabase.auth.signOut();
+          } catch (signOutError) {
+            console.error('Error signing out:', signOutError);
+          }
+          setUser(null);
+          setLoading(false);
+          return;
+        }
+        
+        console.log('Using demo mode due to connection error');
         setSupabaseAvailable(false);
         setLoading(false);
       }
@@ -105,6 +134,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
             try {
+              if (event === 'TOKEN_REFRESHED' && !session) {
+                // Token refresh failed, clear the session
+                console.log('Token refresh failed, clearing session');
+                setUser(null);
+                setLoading(false);
+                return;
+              }
+              
               if (session?.user) {
                 await loadUserProfile(session.user);
               } else {
@@ -113,7 +150,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
               }
             } catch (error) {
               console.error('Auth state change error:', error);
-              setSupabaseAvailable(false);
+              
+              // Check for invalid refresh token error in auth state change
+              if (error instanceof Error && error.message.includes('Invalid Refresh Token')) {
+                console.log('Invalid refresh token in auth state change, clearing session');
+                try {
+                  await supabase.auth.signOut();
+                } catch (signOutError) {
+                  console.error('Error signing out:', signOutError);
+                }
+                setUser(null);
+              } else {
+                setSupabaseAvailable(false);
+              }
               setLoading(false);
             }
           });
