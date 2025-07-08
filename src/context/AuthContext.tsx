@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from '../types';
 import { supabase } from '../lib/supabase';
 import type { User as SupabaseUser } from '@supabase/supabase-js';
+import OnboardingFlow from '../components/Onboarding/OnboardingFlow';
 
 interface AuthContextType {
   user: User | null;
@@ -10,6 +11,8 @@ interface AuthContextType {
   updateUser: (userData: Partial<User>) => Promise<void>;
   isAuthenticated: boolean;
   loading: boolean;
+  needsOnboarding: boolean;
+  setNeedsOnboarding: (needs: boolean) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -27,6 +30,7 @@ const DEMO_USER: User = {
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [needsOnboarding, setNeedsOnboarding] = useState(false);
   const [supabaseAvailable, setSupabaseAvailable] = useState(true);
 
   useEffect(() => {
@@ -186,6 +190,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loadUserProfile = async (authUser: SupabaseUser) => {
     try {
+      // Check if user has completed onboarding
+      const { data: profileData, error: profileError } = await supabase
+        .from('user_profile')
+        .select('onboarding_completed')
+        .eq('user_id', authUser.id)
+        .maybeSingle();
+
+      const hasCompletedOnboarding = profileData?.onboarding_completed || false;
+      setNeedsOnboarding(!hasCompletedOnboarding);
+
       const { data, error } = await supabase
         .from('users')
         .select('*')
@@ -383,12 +397,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logout,
     updateUser,
     isAuthenticated: !!user,
-    loading
+    loading,
+    needsOnboarding,
+    setNeedsOnboarding
   };
 
   return (
     <AuthContext.Provider value={value}>
       {children}
+      {needsOnboarding && user && !loading && (
+        <OnboardingFlow onComplete={() => setNeedsOnboarding(false)} />
+      )}
     </AuthContext.Provider>
   );
 };

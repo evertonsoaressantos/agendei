@@ -12,6 +12,7 @@ import TodaySchedule from './components/Dashboard/TodaySchedule';
 import ClientList from './components/Clients/ClientList';
 import CustomerListReport from './components/Customers/CustomerListReport';
 import DebugPanel from './components/Debug/DebugPanel';
+import MyServices from './components/Services/MyServices';
 
 // Lazy loaded components
 import {
@@ -127,6 +128,8 @@ const MainApp: React.FC = () => {
       case 'customer-report':
       case 'reports':
         return <CustomerListReport />;
+      case 'my-services':
+        return <MyServices />;
       case 'settings':
         return (
           <div className="bg-white rounded-2xl p-8 border border-gray-200">
