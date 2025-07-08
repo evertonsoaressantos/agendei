@@ -42,6 +42,20 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
     return title;
   };
 
+  const getTitleFromRoute = (route: string) => {
+    switch (route) {
+      case 'dashboard': return 'Painel';
+      case 'appointments': return 'Agendamentos';
+      case 'services': return 'Serviços';
+      case 'customers': return 'Gestão de Clientes';
+      case 'customer-report': return 'Relatórios';
+      case 'reports': return 'Relatórios';
+      case 'my-services': return 'Meus Serviços';
+      case 'settings': return 'Configurações';
+      default: return 'Painel';
+    }
+  };
+
   return (
     <>
       <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
