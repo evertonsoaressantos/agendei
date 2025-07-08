@@ -20,23 +20,18 @@ interface AppContextType {
   refreshCustomerCount: () => Promise<void>;
   refreshTodayVariation: () => Promise<void>;
   refreshAppointments: () => Promise<void>;
+  loadUserServices: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-// Mock data for services (these are business logic, not customer data)
-const mockServices: Service[] = [
-  { id: '1', name: 'Limpeza de Pele', duration: 60, price: 150, description: 'Limpeza profunda facial' },
-  { id: '2', name: 'Massagem Relaxante', duration: 90, price: 200, description: 'Massagem corporal completa' },
-  { id: '3', name: 'Tratamento Capilar', duration: 120, price: 180, description: 'Hidratação e reconstrução capilar' },
-  { id: '4', name: 'Manicure', duration: 45, price: 50, description: 'Cuidados com as unhas das mãos' },
-  { id: '5', name: 'Pedicure', duration: 60, price: 60, description: 'Cuidados com as unhas dos pés' },
-];
+// Services will be loaded from user_services table
+const mockServices: Service[] = [];
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [clients, setClients] = useState<Client[]>([]);
-  const [services] = useState<Service[]>(mockServices);
+  const [services, setServices] = useState<Service[]>(mockServices);
   const [customerCount, setCustomerCount] = useState<number>(0);
   const [todayVariation, setTodayVariation] = useState<number>(0);
   const [loading, setLoading] = useState(true);
@@ -63,6 +58,9 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       // Load appointments from database/localStorage
       await refreshAppointments();
       
+      // Load user services
+      await loadUserServices();
+      
       // Load clients from localStorage
       loadClientsFromLocalStorage();
       
@@ -77,6 +75,37 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
       console.error('AppContext: Erro ao carregar dados iniciais:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadUserServices = async () => {
+    if (!isAuthenticated) return;
+
+    try {
+      const { data, error } = await supabase
+        .from('user_services')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('AppContext: Erro ao carregar serviços:', error);
+        return;
+      }
+
+      // Convert to Service format
+      const userServices: Service[] = (data || []).map(service => ({
+        id: service.id,
+        name: service.service_name,
+        duration: service.duration_minutes,
+        price: service.price,
+        description: service.service_name
+      }));
+
+      setServices(userServices);
+      console.log('AppContext: Serviços do usuário carregados:', userServices.length);
+    } catch (error) {
+      console.error('AppContext: Erro ao carregar serviços:', error);
     }
   };
 
@@ -329,7 +358,8 @@ Nos vemos em breve! 💝`;
     sendWhatsAppMessage,
     refreshCustomerCount,
     refreshTodayVariation,
-    refreshAppointments
+    refreshAppointments,
+    loadUserServices
   };
 
   return (
